@@ -28,3 +28,9 @@ __pycache__/
 *.njsproj
 *.sln
 *.sw?
+
+
+# Secrets — never commit these
+.env
+.env.local
+.env.production
