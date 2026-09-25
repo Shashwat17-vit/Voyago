@@ -26,7 +26,6 @@ function NewTripModal({ isOpen, onClose, initialData }) {
   const [step1Error, setStep1Error] = useState('');
 
   const [currentLocation, setCurrentLocation] = useState('');
-  const [budget, setBudget] = useState('');
   const [tripType, setTripType] = useState('');
   const [accommodation, setAccommodation] = useState('');
   const [transport, setTransport] = useState('');
@@ -129,7 +128,6 @@ function NewTripModal({ isOpen, onClose, initialData }) {
         credentials: 'include',
         body: JSON.stringify({
           currentLocation,
-          budget,
           tripType,
           accommodation,
           transportation: transport,
@@ -325,39 +323,22 @@ function NewTripModal({ isOpen, onClose, initialData }) {
                 />
               </Form.Group>
 
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label className="newtrip-label">Budget (per person) <span className="newtrip-required">*</span></Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="e.g. $2,000"
-                      className="newtrip-input"
-                      value={budget}
-                      onChange={(e) => setBudget(e.target.value)}
-                      required
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label className="newtrip-label">Trip Type <span className="newtrip-required">*</span></Form.Label>
-                    <Form.Select
-                      className="newtrip-input newtrip-select"
-                      value={tripType}
-                      onChange={(e) => setTripType(e.target.value)}
-                      required
-                    >
-                      <option value="">Select type...</option>
-                      <option value="adventure">Adventure</option>
-                      <option value="relaxation">Relaxation</option>
-                      <option value="cultural">Cultural</option>
-                      <option value="road-trip">Road Trip</option>
-                      <option value="business">Business</option>
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-              </Row>
+              <Form.Group className="mb-3">
+                <Form.Label className="newtrip-label">Trip Type <span className="newtrip-required">*</span></Form.Label>
+                <Form.Select
+                  className="newtrip-input newtrip-select"
+                  value={tripType}
+                  onChange={(e) => setTripType(e.target.value)}
+                  required
+                >
+                  <option value="">Select type...</option>
+                  <option value="adventure">Adventure</option>
+                  <option value="relaxation">Relaxation</option>
+                  <option value="cultural">Cultural</option>
+                  <option value="road-trip">Road Trip</option>
+                  <option value="business">Business</option>
+                </Form.Select>
+              </Form.Group>
 
               <Row>
                 <Col md={6}>

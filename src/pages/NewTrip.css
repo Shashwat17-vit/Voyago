@@ -1402,6 +1402,10 @@
 
 .adventure-card:hover .adventure-card-delete-btn { opacity: 1; }
 
+@media (hover: none) {
+  .adventure-card-delete-btn { opacity: 1; }
+}
+
 .adventure-card-confirm {
   display: flex;
   align-items: center;
@@ -1464,5 +1468,28 @@
 
   .newtrip-modal-body {
     padding: 1rem 1.25rem 1.5rem;
+  }
+
+  .newtrip-modal-overlay {
+    padding: 0.75rem;
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  .newtrip-modal {
+    max-height: 92dvh;
+  }
+
+  .tripdetails-page {
+    padding: 1rem 0.75rem;
+  }
+
+  .td-sidebar-nav {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .trip-map-container {
+    height: min(420px, 70dvh);
+    min-height: 240px;
   }
 }

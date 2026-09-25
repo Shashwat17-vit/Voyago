@@ -363,7 +363,7 @@ function Settings() {
               {SECTIONS.map((sec) => {
                 const Icon = sec.icon;
                 return (
-                  <Nav.Item key={sec.id} className="w-100">
+                  <Nav.Item key={sec.id} className="w-md-100">
                     <button
                       className={`settings-nav-item ${activeSection === sec.id ? 'settings-nav-active' : ''}`}
                       onClick={() => setActiveSection(sec.id)}

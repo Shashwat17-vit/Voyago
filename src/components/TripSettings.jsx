@@ -43,7 +43,6 @@ function TripSettings({ tripData, onRegenerate }) {
   const [endDate, setEndDate] = useState(tripData.endDate || '');
   const [numPeople, setNumPeople] = useState(tripData.numPeople || '');
   const [currentLocation, setCurrentLocation] = useState(tripData.currentLocation || '');
-  const [budget, setBudget] = useState(tripData.budget || '');
   const [tripType, setTripType] = useState(tripData.tripType || '');
   const [accommodation, setAccommodation] = useState(tripData.accommodation || '');
   const [transport, setTransport] = useState(tripData.transportation || tripData.transport || '');
@@ -59,7 +58,6 @@ function TripSettings({ tripData, onRegenerate }) {
 
   const buildPrefsBody = () => ({
     currentLocation,
-    budget,
     tripType,
     accommodation,
     transportation: transport,
@@ -219,37 +217,20 @@ function TripSettings({ tripData, onRegenerate }) {
             />
           </Form.Group>
 
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className="newtrip-label">Budget (per person) <span className="newtrip-required">*</span></Form.Label>
-                <Form.Control
-                  type="text"
-                  className="newtrip-input"
-                  value={budget}
-                  onChange={(e) => { setBudget(e.target.value); setSaved(false); }}
-                  placeholder="e.g. $2,000"
-                  required
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className="newtrip-label">Trip Type <span className="newtrip-required">*</span></Form.Label>
-                <Form.Select
-                  className="newtrip-input newtrip-select"
-                  value={tripType}
-                  onChange={(e) => { setTripType(e.target.value); setSaved(false); }}
-                  required
-                >
-                  <option value="">Select type...</option>
-                  {tripTypeOptions.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-          </Row>
+          <Form.Group className="mb-3">
+            <Form.Label className="newtrip-label">Trip Type <span className="newtrip-required">*</span></Form.Label>
+            <Form.Select
+              className="newtrip-input newtrip-select"
+              value={tripType}
+              onChange={(e) => { setTripType(e.target.value); setSaved(false); }}
+              required
+            >
+              <option value="">Select type...</option>
+              {tripTypeOptions.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
 
           <Row>
             <Col md={6}>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Row, Col, Nav } from 'react-bootstrap';
 import {
-  Calendar, DollarSign, MapPin, Settings,
+  Calendar, MapPin, Settings,
   UserPlus, Pencil, ChevronLeft, X, Crown, Mail, Users, Trash2,
 } from 'lucide-react';
 import TopNavbar from '../components/TopNavbar';
@@ -10,7 +10,6 @@ import AvatarGroup from '../components/AvatarGroup';
 import ItineraryCalendar from '../components/ItineraryCalendar';
 import TripMap from '../components/TripMap';
 import TripSettings from '../components/TripSettings';
-import BudgetTracker from '../components/BudgetTracker';
 import { API_BASE } from '../config';
 import './Home.css';
 import './NewTrip.css';
@@ -20,7 +19,6 @@ const defaultImage = 'https://images.unsplash.com/photo-1587474260584-136574528e
 const sidebarNav = [
   { id: 'calendar', label: 'Calendar', icon: Calendar },
   { id: 'map',      label: 'Map',      icon: MapPin },
-  { id: 'budget',   label: 'Budget',   icon: DollarSign },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
@@ -197,14 +195,6 @@ function TripDetails() {
 
             {activeNav === 'calendar' && (
               <ItineraryCalendar tripId={tripId} tripTitle={tripTitle} destination={destination} />
-            )}
-            {activeNav === 'budget' && (
-              <BudgetTracker
-                members={members}
-                tripId={String(tripId)}
-                totalBudget={trip.budget || 5000}
-                budgetCurrency="USD"
-              />
             )}
             {activeNav === 'map' && <TripMap destination={destination} />}
             {activeNav === 'settings' && (

@@ -506,3 +506,35 @@
   background: none;
 }
 
+@media (max-width: 768px) {
+  .auth-page {
+    overflow-x: hidden;
+    overflow-y: auto;
+    align-items: flex-start;
+    padding: 4.5rem 0 1.5rem;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+
+  .auth-theme-toggle {
+    top: max(1rem, env(safe-area-inset-top));
+    right: max(1rem, env(safe-area-inset-right));
+  }
+
+  .auth-container {
+    width: calc(100% - 1.5rem);
+    min-width: 0;
+    min-height: 0;
+    max-width: 100%;
+  }
+
+  .auth-left,
+  .auth-right {
+    animation: none;
+    transform: none;
+  }
+
+  .password-rules {
+    grid-template-columns: 1fr;
+  }
+}
+

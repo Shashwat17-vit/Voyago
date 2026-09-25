@@ -4,6 +4,8 @@
   border: 1px solid var(--card-border);
   border-radius: 18px;
   overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
   animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -151,6 +153,8 @@
 
 .cal-day-view {
   overflow-y: auto;
+  min-width: 0;
+  max-width: 100%;
   max-height: calc(100vh - 220px);
   padding: 0 0 1rem;
 }
@@ -257,6 +261,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
   max-height: calc(100vh - 220px);
 }
 
@@ -312,6 +318,8 @@
   overflow-y: auto;
   overflow-x: auto;
   flex: 1;
+  min-width: 0;
+  max-width: 100%;
 }
 
 /* The fixed-height flex row: hours gutter + day columns */
