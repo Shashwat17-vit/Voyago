@@ -15,9 +15,10 @@ const CATEGORY_COLORS = {
   SIGHTSEEING: '#3b82f6',
   FOOD: '#f97316',
   ACTIVITY: '#f43f5e',
-  TRANSPORT: '#64748b',
   ACCOMMODATION: '#8b5cf6',
 };
+
+const SOURCE_CATEGORIES = new Set(['TRANSPORT']);
 
 function pinIcon(color) {
   return L.divIcon({
@@ -42,13 +43,25 @@ function FitPins({ pins }) {
   return null;
 }
 
+function isDestinationEvent(ev, destination) {
+  const category = (ev.category || '').toUpperCase();
+  if (SOURCE_CATEGORIES.has(category)) return false;
+
+  const dest = (destination || '').trim().toLowerCase();
+  const loc = `${ev.locationName || ''} ${ev.title || ''}`.toLowerCase();
+  const looksLikeTravel = /\b(flight|depart|departure|origin|from home|drive from|train from|transfer from)\b/.test(loc);
+  if (looksLikeTravel) return false;
+  if (dest && loc.includes(' to ') && !loc.includes(dest)) return false;
+  return Boolean(ev.locationName || (ev.latitude != null && ev.longitude != null));
+}
+
 async function geocode(query) {
   const res = await fetch(
     `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`,
-    { headers: { 'Accept-Language': 'en', 'User-Agent': 'Voyago/1.0' } },
+    { headers: { 'Accept-Language': 'en' } },
   );
   const data = await res.json();
-  if (!data?.length) return null;
+  if (!Array.isArray(data) || !data.length) return null;
   return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
 }
 
@@ -72,8 +85,8 @@ function TripMap({ destination, tripId }) {
           if (Array.isArray(days)) {
             for (const day of days) {
               for (const ev of day.events || []) {
+                if (!isDestinationEvent(ev, destination)) continue;
                 const name = ev.locationName || ev.title;
-                if (!name) continue;
                 let coords = null;
                 if (ev.latitude != null && ev.longitude != null) {
                   coords = [Number(ev.latitude), Number(ev.longitude)];
@@ -88,7 +101,7 @@ function TripMap({ destination, tripId }) {
                   coords,
                   query: ev.locationName
                     ? `${ev.locationName}${destination ? `, ${destination}` : ''}`
-                    : destination,
+                    : '',
                 });
               }
             }
@@ -163,7 +176,7 @@ function TripMap({ destination, tripId }) {
       <div className="trip-map-header">
         <h3 className="trip-map-title">{destination}</h3>
         <p className="trip-map-place">
-          {pins.length} stop{pins.length === 1 ? '' : 's'} on this itinerary
+          {pins.length} destination stop{pins.length === 1 ? '' : 's'}
         </p>
       </div>
       <div className="trip-map-container">
@@ -174,8 +187,8 @@ function TripMap({ destination, tripId }) {
           style={{ height: '100%', width: '100%', borderRadius: '12px' }}
         >
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {pins.map((pin) => (
             <Marker key={pin.id} position={pin.coords} icon={pinIcon(pin.color)}>
