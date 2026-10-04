@@ -347,10 +347,17 @@
   white-space: nowrap;
 }
 
-.search-cta-btn:hover {
+.search-cta-btn:hover:not(:disabled) {
   background: #1e293b;
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.search-cta-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* ── Adventures Section ── */

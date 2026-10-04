@@ -3,29 +3,35 @@ import { clearGuest, keepDraft, takeDraft } from './guestSession';
 
 /**
  * Turns a guest draft into a real trip after the user signs in.
- * Returns { tripId } on success. On failure the draft is put back so Home can retry.
+ * Returns { tripId } on success. On failure the draft is put back
+ * with tripId set so a retry does not create a second trip.
  */
 export async function flushGuestDraft() {
   const draft = takeDraft();
   clearGuest();
-  if (!draft?.destination && !draft?.title) return null;
+  if (!draft?.destination && !draft?.title && !draft?.tripId) return null;
 
   try {
-    const tripRes = await fetch(`${API_BASE}/api/trips`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title: draft.title,
-        destination: draft.destination,
-        startDate: draft.startDate,
-        endDate: draft.endDate,
-        numTravelers: draft.numTravelers || draft.numPeople,
-      }),
-    });
-    const tripBody = await tripRes.json().catch(() => ({}));
-    if (!tripRes.ok) throw new Error(tripBody.error || 'Could not create the trip from your draft.');
-    const tripId = tripBody.tid;
+    let tripId = draft.tripId;
+    if (!tripId) {
+      const tripRes = await fetch(`${API_BASE}/api/trips`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: draft.title,
+          destination: draft.destination,
+          startDate: draft.startDate,
+          endDate: draft.endDate,
+          numTravelers: draft.numTravelers || draft.numPeople,
+        }),
+      });
+      const tripBody = await tripRes.json().catch(() => ({}));
+      if (!tripRes.ok) throw new Error(tripBody.error || 'Could not create the trip from your draft.');
+      tripId = tripBody.tid;
+      if (!tripId) throw new Error('Could not create the trip from your draft.');
+      draft.tripId = tripId;
+    }
 
     if (draft.tripType || draft.currentLocation || draft.interests?.length) {
       const prefsRes = await fetch(`${API_BASE}/api/trips/${tripId}/preferences`, {
