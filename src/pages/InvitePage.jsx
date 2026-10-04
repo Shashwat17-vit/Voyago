@@ -157,9 +157,18 @@ function InvitePage() {
                     <Calendar size={13} /> {formatDateRange(invite.startDate, invite.endDate)}
                   </p>
                 )}
+                {invite.canAccept === false && (
+                  <p className="newtrip-field-error">
+                    {invite.limitMessage || "You're already part of 3 trips. Delete one before you can accept this invite."}
+                  </p>
+                )}
                 {error && <p className="newtrip-field-error">{error}</p>}
                 <div className="invite-card-actions">
-                  <button className="invite-accept-btn" disabled={busy} onClick={() => respond('accept')}>
+                  <button
+                    className="invite-accept-btn"
+                    disabled={busy || invite.canAccept === false}
+                    onClick={() => respond('accept')}
+                  >
                     {busy ? 'Working…' : 'Accept invite'}
                   </button>
                   <button className="invite-decline-btn" disabled={busy} onClick={() => respond('decline')}>

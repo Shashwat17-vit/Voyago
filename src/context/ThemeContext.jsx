@@ -24,6 +24,9 @@ function userFromMe(data) {
     phone: '',
     bio: '',
     avatarUrl: '',
+    tripCount: data.tripCount ?? 0,
+    tripLimit: data.tripLimit ?? 3,
+    canAddTrip: data.canAddTrip !== false,
   };
 }
 

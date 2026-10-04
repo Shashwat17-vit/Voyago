@@ -5,6 +5,7 @@ import { X, ArrowRight, ArrowLeft, Star, Check, AlertCircle } from 'lucide-react
 import PlaceAutocomplete from './PlaceAutocomplete';
 import UserPicker from './UserPicker';
 import { API_BASE } from '../config';
+import { useTheme } from '../context/ThemeContext';
 import { getDraft, isGuest, saveDraft } from '../guestSession';
 import { setPendingRedirect } from '../pendingRedirect';
 import './Collab.css';
@@ -17,6 +18,8 @@ const interestOptions = [
 
 function NewTripModal({ isOpen, onClose, initialData, onDraftSaved }) {
   const navigate = useNavigate();
+  const { user, refreshUser } = useTheme();
+  const atTripLimit = !isGuest() && user && user.canAddTrip === false;
   const [step, setStep] = useState(1);
 
   const [title, setTitle] = useState('');
@@ -115,6 +118,10 @@ function NewTripModal({ isOpen, onClose, initialData, onDraftSaved }) {
       setStep(2);
       return;
     }
+    if (user && user.canAddTrip === false) {
+      setStep1Error("You're already part of 3 trips. Delete one before you create another.");
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE}/api/trips`, {
         method: 'POST',
@@ -130,6 +137,7 @@ function NewTripModal({ isOpen, onClose, initialData, onDraftSaved }) {
       const data = await res.json();
       setTripId(data.tid);
       setInviteResults(await sendInvites(data.tid));
+      refreshUser?.();
       setStep(2);
     } catch (e) {
       setStep1Error('Could not reach the server. Please check your connection.');
@@ -251,7 +259,12 @@ function NewTripModal({ isOpen, onClose, initialData, onDraftSaved }) {
         <div className="newtrip-modal-body">
           {step === 1 && (
             <Form onSubmit={handleStep1Next} className="newtrip-form">
-              {step1Error && <div className="auth-error" style={{ marginBottom: '1rem' }}>{step1Error}</div>}
+              {atTripLimit && (
+                <div className="auth-error" style={{ marginBottom: '1rem' }}>
+                  You're already part of 3 trips. Delete one on Home before you create another.
+                </div>
+              )}
+              {step1Error && !atTripLimit && <div className="auth-error" style={{ marginBottom: '1rem' }}>{step1Error}</div>}
               <Form.Group className="mb-3">
                 <Form.Label className="newtrip-label">Trip Title</Form.Label>
                 <Form.Control
