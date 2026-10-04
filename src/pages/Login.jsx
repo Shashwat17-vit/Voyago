@@ -5,6 +5,8 @@ import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { API_BASE } from '../config';
 import { takePendingRedirect } from '../pendingRedirect';
+import { enterGuest } from '../guestSession';
+import { flushGuestDraft } from '../flushGuestDraft';
 import './Auth.css';
 
 function Login() {
@@ -13,7 +15,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, becomeGuest } = useTheme();
 
   const handleLogin = async (e) => {
     e?.preventDefault();
@@ -34,6 +36,15 @@ function Login() {
         const err = await res.json().catch(() => ({}));
         setError(err.error || 'Invalid email or password');
         return;
+      }
+      try {
+        const flushed = await flushGuestDraft();
+        if (flushed?.tripId) {
+          navigate('/trips/details', { state: { tripId: flushed.tripId } });
+          return;
+        }
+      } catch {
+        // Draft stays in localStorage; Home will offer a retry.
       }
       navigate(takePendingRedirect() || '/home');
     } catch {
@@ -140,6 +151,17 @@ function Login() {
             Don't have an account?{' '}
             <Link to="/signup" className="auth-switch-link">Sign Up</Link>
           </p>
+          <button
+            type="button"
+            className="auth-switch-link auth-guest-btn"
+            onClick={() => {
+              enterGuest();
+              becomeGuest();
+              navigate('/home');
+            }}
+          >
+            Continue as Guest
+          </button>
         </Col>
       </Row>
     </Container>

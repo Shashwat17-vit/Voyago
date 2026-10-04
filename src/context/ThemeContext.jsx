@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { API_BASE } from '../config';
+import { GUEST_USER, clearGuestFlag, isGuest } from '../guestSession';
 
 const ThemeContext = createContext();
 
@@ -21,20 +22,31 @@ export function ThemeProvider({ children }) {
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         if (data) {
+          clearGuestFlag();
           setUser({
+            uid: data.uid ?? null,
             name: data.name || data.email || '',
             initials: toInitials(data.name || data.email || ''),
             email: data.email || '',
             tag: data.tag || '',
             handle: data.handle || (data.tag ? `#${data.tag}` : ''),
+            isGuest: false,
             phone: '',
             bio: '',
             avatarUrl: '',
           });
+        } else if (isGuest()) {
+          setUser(GUEST_USER);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        if (isGuest()) setUser(GUEST_USER);
+      });
   }, []);
+
+  const becomeGuest = () => {
+    setUser(GUEST_USER);
+  };
 
   const [settings, setSettings] = useState({
     language: 'en',
@@ -70,7 +82,7 @@ export function ThemeProvider({ children }) {
     <ThemeContext.Provider value={{
       theme, setTheme, toggleTheme,
       sidebarOpen, toggleSidebar,
-      user, updateUser,
+      user, updateUser, becomeGuest,
       settings, updateSettings,
     }}>
       <div data-theme={theme}>

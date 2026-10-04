@@ -93,9 +93,9 @@ function AdventureTripCard({ trip, onClick, onDelete }) {
         </div>
         <div className="adventure-card-footer">
           <span className="adventure-card-nights">{nights > 0 ? `${nights} nights` : '—'}</span>
-          <span className={`status-pill ${trip.confirmed ? 'status-pill-confirmed' : 'status-pill-planning'}`}>
-            {trip.confirmed ? <Lock size={10} /> : <Pencil size={10} />}
-            {trip.confirmed ? 'Confirmed' : 'Planning'}
+          <span className={`status-pill ${trip.isDraft ? 'status-pill-planning' : trip.confirmed ? 'status-pill-confirmed' : 'status-pill-planning'}`}>
+            {trip.isDraft ? <Pencil size={10} /> : trip.confirmed ? <Lock size={10} /> : <Pencil size={10} />}
+            {trip.isDraft ? 'Draft' : trip.confirmed ? 'Confirmed' : 'Planning'}
           </span>
         </div>
       </div>

@@ -1,0 +1,283 @@
+.about-page {
+  flex: 1;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+
+.about-kicker {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.about-title {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+}
+
+.about-lead {
+  max-width: 640px;
+  margin: 0.75rem auto 0;
+  color: var(--text-muted);
+  line-height: 1.7;
+  font-size: 1.02rem;
+}
+
+.about-player {
+  margin-top: 2rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.about-stage {
+  position: relative;
+  min-height: 320px;
+  padding: 1.5rem 1.5rem 1.25rem;
+  background:
+    radial-gradient(ellipse at 20% 0%, var(--glow-color), transparent 55%),
+    var(--surface-bg-subtle);
+}
+
+.about-stage-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 1.25rem;
+}
+
+.about-chapter-index {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.about-time {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.about-scene-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+}
+
+.about-scene-copy {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+.about-steps {
+  display: grid;
+  gap: 0.65rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.about-step-num {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.about-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.85rem 1rem;
+  border-top: 1px solid var(--card-border);
+  background: var(--card-bg);
+}
+
+.about-icon-btn,
+.about-play-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--card-border);
+  background: var(--surface-bg);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.about-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+
+.about-play-btn {
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--accent-dark);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.about-icon-btn:hover,
+.about-play-btn:hover {
+  filter: brightness(1.05);
+}
+
+.about-scrub {
+  flex: 1;
+  height: 6px;
+  border: none;
+  border-radius: 999px;
+  background: var(--surface-bg);
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+}
+
+.about-scrub-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+}
+
+.about-chapters {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 1rem 1rem;
+}
+
+.about-chapter-btn {
+  flex: 0 0 auto;
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.about-chapter-btn.active {
+  background: var(--accent-bg);
+  border-color: transparent;
+  color: var(--accent);
+}
+
+.about-docs {
+  margin-top: 2.5rem;
+}
+
+.about-docs h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.about-docs > p {
+  margin: 0 0 1.25rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.about-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 1rem 1.05rem 1.1rem;
+}
+
+.about-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 0.4rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.about-card p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 768px) {
+  .about-page {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .about-title {
+    font-size: 1.75rem;
+  }
+
+  .about-stage {
+    min-height: 0;
+    padding: 1.15rem 1rem 1rem;
+  }
+
+  .about-scene-title {
+    font-size: 1.25rem;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-controls {
+    flex-wrap: wrap;
+  }
+
+  .about-scrub {
+    order: 5;
+    flex-basis: 100%;
+  }
+}

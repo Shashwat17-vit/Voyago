@@ -5,6 +5,8 @@ import { X, ArrowRight, ArrowLeft, Star, Check, AlertCircle } from 'lucide-react
 import PlaceAutocomplete from './PlaceAutocomplete';
 import UserPicker from './UserPicker';
 import { API_BASE } from '../config';
+import { getDraft, isGuest, saveDraft } from '../guestSession';
+import { setPendingRedirect } from '../pendingRedirect';
 import './Collab.css';
 
 const interestOptions = [
@@ -13,7 +15,7 @@ const interestOptions = [
   'Photography', 'Local Culture',
 ];
 
-function NewTripModal({ isOpen, onClose, initialData }) {
+function NewTripModal({ isOpen, onClose, initialData, onDraftSaved }) {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
 
@@ -48,6 +50,24 @@ function NewTripModal({ isOpen, onClose, initialData }) {
   }, [initialData]);
 
   useEffect(() => {
+    if (!isOpen || !isGuest()) return;
+    const draft = getDraft();
+    if (!draft) return;
+    if (draft.title) setTitle(draft.title);
+    if (draft.destination) setDestination(draft.destination);
+    if (draft.startDate) setStartDate(draft.startDate);
+    if (draft.endDate) setEndDate(draft.endDate);
+    if (draft.numTravelers || draft.numPeople) setNumPeople(draft.numTravelers || draft.numPeople);
+    if (draft.currentLocation) setCurrentLocation(draft.currentLocation);
+    if (draft.tripType) setTripType(draft.tripType);
+    if (draft.accommodation) setAccommodation(draft.accommodation);
+    if (draft.transport) setTransport(draft.transport);
+    if (Array.isArray(draft.interests)) setInterests(draft.interests);
+    if (draft.notes) setNotes(draft.notes);
+    if (draft.inviteEmails) setInviteEmailExtra(draft.inviteEmails);
+  }, [isOpen]);
+
+  useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       setStep(1);
@@ -67,9 +87,34 @@ function NewTripModal({ isOpen, onClose, initialData }) {
     });
   };
 
+  const persistGuestDraft = (extra = {}) => {
+    const next = saveDraft({
+      title,
+      destination,
+      startDate,
+      endDate,
+      numTravelers: numPeople,
+      currentLocation,
+      tripType,
+      accommodation,
+      transport,
+      interests,
+      notes,
+      inviteEmails: inviteEmailExtra,
+      ...extra,
+    });
+    onDraftSaved?.(next);
+    return next;
+  };
+
   const handleStep1Next = async (e) => {
     e.preventDefault();
     setStep1Error('');
+    if (isGuest()) {
+      persistGuestDraft();
+      setStep(2);
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE}/api/trips`, {
         method: 'POST',
@@ -127,6 +172,13 @@ function NewTripModal({ isOpen, onClose, initialData }) {
     e.preventDefault();
     if (interests.length < 3) {
       setInterestError('Please select at least 3 interests');
+      return;
+    }
+    if (isGuest()) {
+      persistGuestDraft();
+      setPendingRedirect('/home');
+      onClose();
+      navigate('/signup');
       return;
     }
     setInterestError('');
@@ -299,8 +351,12 @@ function NewTripModal({ isOpen, onClose, initialData }) {
 
               <Form.Group className="mb-3">
                 <Form.Label className="newtrip-label">Invite Members</Form.Label>
-                <UserPicker selected={invitePeople} onChange={setInvitePeople} />
-                <p className="newtrip-hint">Search by name or #tag. Two people with the same name are told apart by their tag.</p>
+                {!isGuest() && <UserPicker selected={invitePeople} onChange={setInvitePeople} />}
+                {isGuest() ? (
+                  <p className="newtrip-hint">Create an account to search Voyago users by name. You can still leave an email below.</p>
+                ) : (
+                  <p className="newtrip-hint">Search by name or #tag. Two people with the same name are told apart by their tag.</p>
+                )}
               </Form.Group>
 
               <Form.Group className="mb-3">
@@ -479,7 +535,7 @@ function NewTripModal({ isOpen, onClose, initialData }) {
                   Back
                 </Button>
                 <Button type="submit" variant="outline-light" className="newtrip-submit" disabled={generating}>
-                  {generating ? 'Generating...' : 'Generate Itinerary'}
+                  {generating ? 'Generating...' : isGuest() ? 'Save draft and create an account' : 'Generate Itinerary'}
                   {!generating && <Star size={18} style={{ marginLeft: '8px' }} />}
                 </Button>
               </div>

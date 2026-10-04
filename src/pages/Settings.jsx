@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import TopNavbar from '../components/TopNavbar';
 import { useTheme } from '../context/ThemeContext';
+import { isGuest } from '../guestSession';
 import './Settings.css';
 import '../components/Collab.css';
 
@@ -349,6 +350,25 @@ function Settings() {
   };
 
   const activeConfig = SECTIONS.find((s) => s.id === activeSection);
+
+  if (user?.isGuest || isGuest()) {
+    return (
+      <div className="home-v2">
+        <TopNavbar />
+        <Container className="settings-page">
+          <div className="settings-card">
+            <h2 className="settings-section-title">You're browsing as a guest</h2>
+            <p className="settings-page-subtitle">
+              Your draft trip stays in this browser until you create an account. Sign up to generate the itinerary and invite others.
+            </p>
+            <button className="settings-btn-primary" onClick={() => navigate('/signup')}>
+              Create account
+            </button>
+          </div>
+        </Container>
+      </div>
+    );
+  }
 
   return (
     <div className="home-v2">

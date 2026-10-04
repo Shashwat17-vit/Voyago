@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Nav } from 'react-bootstrap';
-import { ChevronDown, Settings, Sun, Moon, LogOut, Home, Map, Info } from 'lucide-react';
+import { ChevronDown, Settings, Sun, Moon, LogOut, Home, Map, Info, UserPlus, LogIn } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import InviteInbox from './InviteInbox';
 import { API_BASE } from '../config';
+import { clearGuest, isGuest } from '../guestSession';
 
 const NAV_ITEMS = [
   { path: '/home', label: 'Home', icon: Home },
@@ -40,7 +41,7 @@ function TopNavbar() {
         </Nav>
 
         <div className="navbar-right">
-          <InviteInbox />
+          {!isGuest() && <InviteInbox />}
           <div className="navbar-user" onClick={() => setDropdownOpen(!dropdownOpen)}>
             <span className="navbar-avatar">{user ? user.initials : '…'}</span>
             <ChevronDown size={14} />
@@ -59,21 +60,47 @@ function TopNavbar() {
                   {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
                   {theme === 'light' ? 'Switch Theme (Blue)' : 'Switch Theme (Light)'}
                 </button>
-                <button className="navbar-dropdown-item" onClick={() => { navigate('/settings'); setDropdownOpen(false); }}>
-                  <Settings size={16} />
-                  Settings
-                </button>
-                <button
-                  className="navbar-dropdown-item navbar-dropdown-logout"
-                  onClick={async () => {
-                    setDropdownOpen(false);
-                    await fetch(`${API_BASE}/api/auth/logout`, { method: 'POST', credentials: 'include' });
-                    navigate('/login');
-                  }}
-                >
-                  <LogOut size={16} />
-                  Log Out
-                </button>
+                {isGuest() ? (
+                  <>
+                    <button className="navbar-dropdown-item" onClick={() => { navigate('/signup'); setDropdownOpen(false); }}>
+                      <UserPlus size={16} />
+                      Create account
+                    </button>
+                    <button className="navbar-dropdown-item" onClick={() => { navigate('/login'); setDropdownOpen(false); }}>
+                      <LogIn size={16} />
+                      Log in
+                    </button>
+                    <button
+                      className="navbar-dropdown-item navbar-dropdown-logout"
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        clearGuest();
+                        navigate('/login');
+                      }}
+                    >
+                      <LogOut size={16} />
+                      End guest session
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button className="navbar-dropdown-item" onClick={() => { navigate('/settings'); setDropdownOpen(false); }}>
+                      <Settings size={16} />
+                      Settings
+                    </button>
+                    <button
+                      className="navbar-dropdown-item navbar-dropdown-logout"
+                      onClick={async () => {
+                        setDropdownOpen(false);
+                        await fetch(`${API_BASE}/api/auth/logout`, { method: 'POST', credentials: 'include' });
+                        navigate('/login');
+                      }}
+                    >
+                      <LogOut size={16} />
+                      Log Out
+                    </button>
+                  </>
+                )}
               </div>
             </>
           )}

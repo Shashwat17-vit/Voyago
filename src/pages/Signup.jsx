@@ -5,6 +5,7 @@ import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import api_signup from '../api/api_signup';
 import { API_BASE } from '../config';
+import { enterGuest } from '../guestSession';
 import './Auth.css';
 
 function Signup() {
@@ -16,7 +17,7 @@ function Signup() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, becomeGuest } = useTheme();
 
   const passwordRules = [
     { test: (pw) => pw.length >= 8, label: 'At least 8 characters' },
@@ -183,6 +184,17 @@ function Signup() {
             Already have an account?{' '}
             <Link to="/login" className="auth-switch-link">Login</Link>
           </p>
+          <button
+            type="button"
+            className="auth-switch-link auth-guest-btn"
+            onClick={() => {
+              enterGuest();
+              becomeGuest();
+              navigate('/home');
+            }}
+          >
+            Continue as Guest
+          </button>
         </Col>
       </Row>
     </Container>

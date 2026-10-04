@@ -2,13 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Row, Col, Nav } from 'react-bootstrap';
 import {
-  Calendar, MapPin, Settings, Lock, LockOpen, CheckCircle2,
+  Calendar, MapPin, Settings, MessageCircle, Lock, LockOpen, CheckCircle2,
   UserPlus, Pencil, ChevronLeft, X, Crown, Mail, Users, Trash2,
 } from 'lucide-react';
 import TopNavbar from '../components/TopNavbar';
 import AvatarGroup from '../components/AvatarGroup';
 import ItineraryCalendar from '../components/ItineraryCalendar';
 import TripMap from '../components/TripMap';
+import TripChat from '../components/TripChat';
 import TripSettings from '../components/TripSettings';
 import InviteMembersModal from '../components/InviteMembersModal';
 import { API_BASE } from '../config';
@@ -22,6 +23,7 @@ const AVATAR_COLORS = ['#3b82f6', '#f59e0b', '#10b981', '#8b5cf6', '#ef4444', '#
 
 const sidebarNav = [
   { id: 'calendar', label: 'Calendar', icon: Calendar },
+  { id: 'chat',     label: 'Chat',     icon: MessageCircle },
   { id: 'map',      label: 'Map',      icon: MapPin },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
@@ -291,7 +293,10 @@ function TripDetails() {
                 canEdit={canEdit}
               />
             )}
-            {activeNav === 'map' && <TripMap destination={destination} />}
+            {activeNav === 'chat' && (
+              <TripChat tripId={tripId} tripTitle={tripTitle} members={avatarMembers} />
+            )}
+            {activeNav === 'map' && <TripMap destination={destination} tripId={tripId} />}
             {activeNav === 'settings' && (
               <TripSettings
                 tripData={{ ...trip, tripId }}

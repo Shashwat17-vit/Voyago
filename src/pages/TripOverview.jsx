@@ -5,6 +5,7 @@ import TopNavbar from '../components/TopNavbar';
 import NewTripModal from '../components/NewTripModal';
 import { useState, useEffect } from 'react';
 import { API_BASE } from '../config';
+import { clearDraft, getDraft, isGuest } from '../guestSession';
 import './Home.css';
 import './NewTrip.css';
 
@@ -15,6 +16,22 @@ function TripOverview() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (isGuest()) {
+      const draft = getDraft();
+      setTrips(draft?.title || draft?.destination ? [{
+        tid: 'draft',
+        title: draft.title || 'Untitled trip',
+        destination: draft.destination || '',
+        startDate: draft.startDate || '',
+        endDate: draft.endDate || '',
+        numTravelers: Number(draft.numTravelers || draft.numPeople || 1),
+        confirmed: false,
+        isAdmin: true,
+        isDraft: true,
+      }] : []);
+      setLoading(false);
+      return;
+    }
     fetch(`${API_BASE}/api/trips`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => { setTrips(Array.isArray(data) ? data : []); setLoading(false); })
@@ -24,10 +41,20 @@ function TripOverview() {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   const handleTripClick = (trip) => {
+    if (trip.isDraft) {
+      setNewTripOpen(true);
+      return;
+    }
     navigate('/trips/details', { state: { tripId: trip.tid } });
   };
 
   const handleDeleteTrip = async (tripId) => {
+    if (tripId === 'draft') {
+      clearDraft();
+      setTrips([]);
+      setConfirmDeleteId(null);
+      return;
+    }
     await fetch(`${API_BASE}/api/trips/${tripId}`, {
       method: 'DELETE',
       credentials: 'include',
@@ -69,8 +96,8 @@ function TripOverview() {
                     style={{ backgroundImage: `url(${trip.imageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80'})` }}
                     onClick={() => handleTripClick(trip)}
                   >
-                    <span className={`trip-badge ${trip.confirmed ? 'badge-active' : 'badge-inplanning'}`}>
-                      {trip.confirmed ? 'Confirmed' : 'Planning'}
+                    <span className={`trip-badge ${trip.isDraft || !trip.confirmed ? 'badge-inplanning' : 'badge-active'}`}>
+                      {trip.isDraft ? 'Draft' : trip.confirmed ? 'Confirmed' : 'Planning'}
                     </span>
                     {!trip.isAdmin && (
                       <span className="trip-badge trip-badge-shared">Shared with you</span>

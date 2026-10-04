@@ -12,9 +12,8 @@ import {
 } from 'lucide-react';
 import './ItineraryCalendar.css';
 
-const HOUR_START = 6;
-const HOUR_END = 22;
 const HOUR_HEIGHT = 88;
+const LEAD_HOURS = 2;
 const MIN_EVENT_HEIGHT = 48;
 // Title, time and location stacked need roughly this much room; shorter events
 // drop to a single row so the title is never clipped.
@@ -75,9 +74,28 @@ function formatHour(h) {
   return h < 12 ? `${h} AM` : `${h - 12} PM`;
 }
 
-function timeToOffset(timeStr) {
+function visibleHourRange(activities) {
+  let firstHour = 24;
+  let lastHour = 0;
+  for (const act of activities) {
+    if (!act?.time) continue;
+    const [h, m] = String(act.time).split(':').map(Number);
+    if (Number.isNaN(h)) continue;
+    firstHour = Math.min(firstHour, h);
+    const end = h + (m || 0) / 60 + (act.duration || 1);
+    lastHour = Math.max(lastHour, Math.ceil(end));
+  }
+  if (firstHour === 24) {
+    return { start: 8, end: 20 };
+  }
+  const start = Math.max(0, firstHour - LEAD_HOURS);
+  const end = Math.min(24, Math.max(lastHour + 1, start + 6));
+  return { start, end };
+}
+
+function timeToOffset(timeStr, hourStart) {
   const [h, m] = timeStr.split(':').map(Number);
-  return (h - HOUR_START + m / 60) * HOUR_HEIGHT;
+  return (h - hourStart + m / 60) * HOUR_HEIGHT;
 }
 
 function durationToHeight(duration) {
@@ -625,9 +643,10 @@ function EventDetailPanel({ event, createMode, dayId, onClose, currentDate, dest
 
 /* ── Day View ── */
 function DayView({ activities, onEventClick }) {
+  const { start: hourStart, end: hourEnd } = visibleHourRange(activities);
   const hours = [];
-  for (let h = HOUR_START; h <= HOUR_END; h++) hours.push(h);
-  const totalHeight = (HOUR_END - HOUR_START) * HOUR_HEIGHT;
+  for (let h = hourStart; h <= hourEnd; h++) hours.push(h);
+  const totalHeight = Math.max(hourEnd - hourStart, 1) * HOUR_HEIGHT;
 
   return (
     <div className="cal-day-view">
@@ -641,7 +660,7 @@ function DayView({ activities, onEventClick }) {
         </div>
         <div className="cal-day-content" style={{ height: totalHeight }}>
           {hours.map((h) => (
-            <div key={h} className="cal-hour-line" style={{ top: (h - HOUR_START) * HOUR_HEIGHT }} />
+            <div key={h} className="cal-hour-line" style={{ top: (h - hourStart) * HOUR_HEIGHT }} />
           ))}
           {activities.map((act, i) => {
             const height = Math.max(durationToHeight(act.duration), MIN_EVENT_HEIGHT);
@@ -652,7 +671,7 @@ function DayView({ activities, onEventClick }) {
                 className={`cal-event-block ${compact ? 'cal-event-block-compact' : ''}`}
                 onClick={() => onEventClick(act)}
                 style={{
-                  top: timeToOffset(act.time),
+                  top: timeToOffset(act.time, hourStart),
                   height,
                   borderLeftColor: act.color,
                 }}
@@ -680,9 +699,11 @@ function DayView({ activities, onEventClick }) {
 
 /* ── Week View ── */
 function WeekView({ dates, itinerary, onEventClick }) {
+  const allActivities = dates.flatMap((date) => itinerary[date] || []);
+  const { start: hourStart, end: hourEnd } = visibleHourRange(allActivities);
   const hours = [];
-  for (let h = HOUR_START; h <= HOUR_END; h++) hours.push(h);
-  const totalHeight = (HOUR_END - HOUR_START) * HOUR_HEIGHT;
+  for (let h = hourStart; h <= hourEnd; h++) hours.push(h);
+  const totalHeight = Math.max(hourEnd - hourStart, 1) * HOUR_HEIGHT;
 
   return (
     <div className="cal-week-view">
@@ -722,7 +743,7 @@ function WeekView({ dates, itinerary, onEventClick }) {
                   <div
                     key={h}
                     className="cal-week-hr-line"
-                    style={{ top: (h - HOUR_START) * HOUR_HEIGHT }}
+                    style={{ top: (h - hourStart) * HOUR_HEIGHT }}
                   />
                 ))}
                 {/* Absolutely-positioned event blocks */}
@@ -732,7 +753,7 @@ function WeekView({ dates, itinerary, onEventClick }) {
                     className="cal-week-event"
                     onClick={() => onEventClick(act)}
                     style={{
-                      top: timeToOffset(act.time),
+                      top: timeToOffset(act.time, hourStart),
                       height: Math.max(durationToHeight(act.duration), MIN_EVENT_HEIGHT),
                       borderLeftColor: act.color,
                       backgroundColor: act.color + '1a',
