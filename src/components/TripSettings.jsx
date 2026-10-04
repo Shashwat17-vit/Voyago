@@ -34,7 +34,7 @@ const transportOptions = [
   { value: 'mixed', label: 'Mixed' },
 ];
 
-function TripSettings({ tripData, onRegenerate }) {
+function TripSettings({ tripData, canEdit = true, onRegenerate }) {
   const tripId = tripData.tripId;
 
   const [title, setTitle] = useState(tripData.title || '');
@@ -133,6 +133,13 @@ function TripSettings({ tripData, onRegenerate }) {
         <h3 className="trip-settings-title">Trip Settings</h3>
         <p className="trip-settings-desc">Update your trip details and preferences, then regenerate your itinerary</p>
       </div>
+
+      {!canEdit && (
+        <div className="trip-settings-warning">
+          <AlertCircle size={14} />
+          This trip is confirmed, so preferences and the itinerary are locked. Only the trip admin can unconfirm it.
+        </div>
+      )}
 
       <div className="trip-settings-body">
         {/* Trip Details */}
@@ -308,7 +315,7 @@ function TripSettings({ tripData, onRegenerate }) {
           variant="outline-secondary"
           className="trip-settings-save-btn"
           onClick={handleSave}
-          disabled={saving || generating}
+          disabled={!canEdit || saving || generating}
         >
           <Save size={16} />
           {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Preferences'}
@@ -316,7 +323,7 @@ function TripSettings({ tripData, onRegenerate }) {
         <Button
           className="trip-settings-regen-btn"
           onClick={handleRegenerate}
-          disabled={generating || saving}
+          disabled={!canEdit || generating || saving}
         >
           <RefreshCw size={16} className={generating ? 'spin' : ''} />
           {generating ? 'Generating...' : 'Re-generate Itinerary'}

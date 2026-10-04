@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Nav } from 'react-bootstrap';
 import { ChevronDown, Settings, Sun, Moon, LogOut, Home, Map, Info } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import InviteInbox from './InviteInbox';
 import { API_BASE } from '../config';
 
 const NAV_ITEMS = [
@@ -39,6 +40,7 @@ function TopNavbar() {
         </Nav>
 
         <div className="navbar-right">
+          <InviteInbox />
           <div className="navbar-user" onClick={() => setDropdownOpen(!dropdownOpen)}>
             <span className="navbar-avatar">{user ? user.initials : '…'}</span>
             <ChevronDown size={14} />

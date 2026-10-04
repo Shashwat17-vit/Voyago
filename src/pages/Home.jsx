@@ -5,6 +5,7 @@ import HeroSection from '../components/HeroSection';
 import AdventuresSection from '../components/AdventuresSection';
 import NewTripModal from '../components/NewTripModal';
 import { API_BASE } from '../config';
+import { takePendingRedirect } from '../pendingRedirect';
 import './Home.css';
 import './NewTrip.css';
 
@@ -13,6 +14,12 @@ function Home() {
   const [trips, setTrips] = useState([]);
   const [newTripOpen, setNewTripOpen] = useState(false);
   const [newTripData, setNewTripData] = useState(null);
+
+  // OAuth sign-in always lands here, so finish any deep link the user started from.
+  useEffect(() => {
+    const pending = takePendingRedirect();
+    if (pending) navigate(pending, { replace: true });
+  }, [navigate]);
 
   useEffect(() => {
     fetch(`${API_BASE}/api/trips`, { credentials: 'include' })

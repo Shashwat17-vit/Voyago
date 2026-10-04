@@ -294,7 +294,7 @@ function ChatBotTab({ destination }) {
   );
 }
 
-function EventDetailPanel({ event, createMode, dayId, onClose, currentDate, destination, onEventChange }) {
+function EventDetailPanel({ event, createMode, dayId, onClose, currentDate, destination, canEdit = true, onEventChange }) {
   const [closing, setClosing] = useState(false);
   const [modalTab, setModalTab] = useState('edit');
   const [eventType, setEventType] = useState('event');
@@ -426,7 +426,9 @@ function EventDetailPanel({ event, createMode, dayId, onClose, currentDate, dest
                   <activeType.icon size={18} color="#fff" />
                 </span>
                 <div>
-                  <h3 className="cal-modal-title-text">{createMode ? 'New Event' : 'Edit Event'}</h3>
+                  <h3 className="cal-modal-title-text">
+                    {createMode ? 'New Event' : canEdit ? 'Edit Event' : 'Event'}
+                  </h3>
                   <span className="cal-modal-subtitle">{activeType.label}</span>
                 </div>
               </div>
@@ -445,6 +447,7 @@ function EventDetailPanel({ event, createMode, dayId, onClose, currentDate, dest
                       style={eventType === t.id ? { background: t.color, color: '#fff' } : {}}
                       onClick={() => setEventType(t.id)}
                       title={t.label}
+                      disabled={!canEdit}
                     >
                       <Icon size={16} />
                     </button>
@@ -464,6 +467,7 @@ function EventDetailPanel({ event, createMode, dayId, onClose, currentDate, dest
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Event name"
+                    readOnly={!canEdit}
                   />
                 </div>
               </div>
@@ -481,6 +485,7 @@ function EventDetailPanel({ event, createMode, dayId, onClose, currentDate, dest
                       className="cal-modal-input"
                       value={startTime}
                       onChange={(e) => setStartTime(e.target.value)}
+                      readOnly={!canEdit}
                     />
                   </div>
                   <ArrowRight size={16} className="cal-modal-when-arrow" />
@@ -491,6 +496,7 @@ function EventDetailPanel({ event, createMode, dayId, onClose, currentDate, dest
                       className="cal-modal-input"
                       value={endTime}
                       onChange={(e) => setEndTime(e.target.value)}
+                      readOnly={!canEdit}
                     />
                   </div>
                   <span className="cal-modal-tz">{timezone}</span>
@@ -509,6 +515,7 @@ function EventDetailPanel({ event, createMode, dayId, onClose, currentDate, dest
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="Search for a place"
+                    readOnly={!canEdit}
                   />
                   {location && (
                     <a
@@ -530,19 +537,21 @@ function EventDetailPanel({ event, createMode, dayId, onClose, currentDate, dest
                   Description
                 </h4>
                 <div className="cal-modal-editor">
-                  <div className="cal-modal-editor-toolbar">
-                    <button className="cal-modal-editor-btn" onClick={() => execFormat('bold')} title="Bold"><Bold size={16} /></button>
-                    <button className="cal-modal-editor-btn" onClick={() => execFormat('italic')} title="Italic"><Italic size={16} /></button>
-                    <button className="cal-modal-editor-btn" onClick={() => execFormat('underline')} title="Underline"><Underline size={16} /></button>
-                    <span className="cal-modal-editor-sep" />
-                    <button className="cal-modal-editor-btn" onClick={() => execFormat('insertUnorderedList')} title="Bullet List"><List size={16} /></button>
-                    <button className="cal-modal-editor-btn" onClick={() => execFormat('insertOrderedList')} title="Numbered List"><ListOrdered size={16} /></button>
-                    <button className="cal-modal-editor-btn" title="Checklist"><ListChecks size={16} /></button>
-                  </div>
+                  {canEdit && (
+                    <div className="cal-modal-editor-toolbar">
+                      <button className="cal-modal-editor-btn" onClick={() => execFormat('bold')} title="Bold"><Bold size={16} /></button>
+                      <button className="cal-modal-editor-btn" onClick={() => execFormat('italic')} title="Italic"><Italic size={16} /></button>
+                      <button className="cal-modal-editor-btn" onClick={() => execFormat('underline')} title="Underline"><Underline size={16} /></button>
+                      <span className="cal-modal-editor-sep" />
+                      <button className="cal-modal-editor-btn" onClick={() => execFormat('insertUnorderedList')} title="Bullet List"><List size={16} /></button>
+                      <button className="cal-modal-editor-btn" onClick={() => execFormat('insertOrderedList')} title="Numbered List"><ListOrdered size={16} /></button>
+                      <button className="cal-modal-editor-btn" title="Checklist"><ListChecks size={16} /></button>
+                    </div>
+                  )}
                   <div
                     ref={descRef}
                     className="cal-modal-editor-area"
-                    contentEditable
+                    contentEditable={canEdit}
                     suppressContentEditableWarning
                     dangerouslySetInnerHTML={{ __html: description }}
                     onBlur={(e) => setDescription(e.currentTarget.innerHTML)}
@@ -558,7 +567,7 @@ function EventDetailPanel({ event, createMode, dayId, onClose, currentDate, dest
 
             <Stack direction="horizontal" gap={2} className="cal-modal-footer flex-wrap justify-content-between">
               <Stack direction="horizontal" gap={2}>
-                {!createMode && (
+                {canEdit && !createMode && (
                   !confirmDelete ? (
                     <button
                       className="cal-modal-footer-btn cal-modal-delete-btn"
@@ -587,14 +596,18 @@ function EventDetailPanel({ event, createMode, dayId, onClose, currentDate, dest
                 )}
               </Stack>
               <Stack direction="horizontal" gap={2}>
-                <button className="cal-modal-footer-btn cal-modal-cancel-btn" onClick={handleClose}>Cancel</button>
-                <button
-                  className="cal-modal-footer-btn cal-modal-save-btn"
-                  onClick={handleSave}
-                  disabled={saving}
-                >
-                  <Save size={15} /> {saving ? 'Saving…' : createMode ? 'Create Event' : 'Save Event'}
+                <button className="cal-modal-footer-btn cal-modal-cancel-btn" onClick={handleClose}>
+                  {canEdit ? 'Cancel' : 'Close'}
                 </button>
+                {canEdit && (
+                  <button
+                    className="cal-modal-footer-btn cal-modal-save-btn"
+                    onClick={handleSave}
+                    disabled={saving}
+                  >
+                    <Save size={15} /> {saving ? 'Saving…' : createMode ? 'Create Event' : 'Save Event'}
+                  </button>
+                )}
               </Stack>
             </Stack>
           </>
@@ -735,7 +748,7 @@ function WeekView({ dates, itinerary, onEventClick }) {
 }
 
 /* ── Main Calendar ── */
-function ItineraryCalendar({ tripId, tripTitle, destination }) {
+function ItineraryCalendar({ tripId, tripTitle, destination, canEdit = true }) {
   const [itinerary, setItinerary] = useState({});
   const [dayIdMap, setDayIdMap] = useState({});
   const [itineraryLoading, setItineraryLoading] = useState(true);
@@ -832,13 +845,15 @@ function ItineraryCalendar({ tripId, tripTitle, destination }) {
               Week
             </button>
           </div>
-          <button
-            className="cal-add-btn"
-            onClick={() => { setSelectedEvent(null); setShowAddEvent(true); }}
-          >
-            <Plus size={15} />
-            Add Event
-          </button>
+          {canEdit && (
+            <button
+              className="cal-add-btn"
+              onClick={() => { setSelectedEvent(null); setShowAddEvent(true); }}
+            >
+              <Plus size={15} />
+              Add Event
+            </button>
+          )}
         </div>
       </div>
 
@@ -858,6 +873,7 @@ function ItineraryCalendar({ tripId, tripTitle, destination }) {
         onClose={() => { setSelectedEvent(null); setShowAddEvent(false); }}
         currentDate={currentDate}
         destination={destination}
+        canEdit={canEdit}
         onEventChange={loadItinerary}
       />
     </div>

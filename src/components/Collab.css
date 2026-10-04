@@ -1,0 +1,420 @@
+/* ── Shared styles for invites, members and trip status ── */
+
+/* Status badges (Planning / Confirmed) */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status-pill-planning {
+  color: #b45309;
+  background: rgba(251, 191, 36, 0.16);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+}
+
+.status-pill-confirmed {
+  color: #047857;
+  background: rgba(16, 185, 129, 0.16);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.td-sidebar-info .status-pill {
+  margin-bottom: 0.6rem;
+}
+
+/* Locked banner shown on calendar / settings when the trip is confirmed */
+.locked-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.locked-banner svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #10b981;
+}
+
+.locked-banner-title {
+  font-weight: 700;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.locked-banner-text {
+  color: var(--text-muted);
+}
+
+/* Confirm / Unconfirm control in the trip topbar */
+.td-confirm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(16, 185, 129, 0.45);
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.td-confirm-btn:hover:not(:disabled) {
+  background: rgba(16, 185, 129, 0.22);
+}
+
+.td-unconfirm-btn {
+  border-color: var(--card-border);
+  background: var(--surface-bg);
+  color: var(--text-primary);
+}
+
+.td-unconfirm-btn:hover:not(:disabled) {
+  background: var(--surface-bg-hover);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.td-confirm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Invite modal ── */
+.invite-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.invite-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: var(--surface-bg);
+}
+
+.invite-row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.invite-row-email {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invite-row-note {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.invite-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1.5px solid var(--card-border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.invite-copy-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.invite-section-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  margin: 1.25rem 0 0;
+}
+
+.newtrip-hint {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  margin: 0.4rem 0 0;
+}
+
+.invite-empty {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0.5rem 0 0;
+}
+
+.invite-success {
+  font-size: 0.82rem;
+  color: #10b981;
+  margin: 0.5rem 0 0;
+  font-weight: 600;
+}
+
+.invite-add-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.invite-add-row .newtrip-input {
+  flex: 1;
+}
+
+.invite-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: #06172e;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter 0.2s;
+}
+
+.invite-add-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.invite-add-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Navbar invite inbox ── */
+.navbar-invites {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.navbar-invites:hover {
+  background: var(--surface-bg-hover);
+  color: var(--text-primary);
+}
+
+.navbar-invites-count {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.64rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.invite-inbox {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 320px;
+  max-height: 420px;
+  overflow-y: auto;
+  background: var(--modal-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+  z-index: 1200;
+  padding: 0.5rem;
+}
+
+.invite-inbox-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  padding: 8px 10px 6px;
+  margin: 0;
+}
+
+.invite-inbox-item {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: var(--surface-bg);
+  margin-bottom: 6px;
+}
+
+.invite-inbox-trip {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.invite-inbox-meta {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.invite-inbox-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.invite-accept-btn,
+.invite-decline-btn {
+  flex: 1;
+  padding: 6px 0;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.invite-accept-btn {
+  border: none;
+  background: var(--accent);
+  color: #06172e;
+}
+
+.invite-accept-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.invite-decline-btn {
+  border: 1.5px solid var(--card-border);
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.invite-decline-btn:hover:not(:disabled) {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.invite-accept-btn:disabled,
+.invite-decline-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Invite landing page (/invite/:token) ── */
+.invite-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.invite-card {
+  width: 100%;
+  max-width: 460px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.invite-card-image {
+  height: 160px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--surface-bg);
+}
+
+.invite-card-body {
+  padding: 1.5rem;
+}
+
+.invite-card-eyebrow {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--accent);
+}
+
+.invite-card-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0.35rem 0 0.2rem;
+}
+
+.invite-card-sub {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.invite-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 1.5rem;
+}
+
+.invite-card-actions .invite-accept-btn,
+.invite-card-actions .invite-decline-btn {
+  padding: 11px 0;
+  font-size: 0.9rem;
+}
+
+.invite-card-note {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 1rem 0 0;
+  line-height: 1.5;
+}

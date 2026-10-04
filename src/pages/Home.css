@@ -102,6 +102,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  gap: 6px;
 }
 
 .navbar-user {
@@ -789,6 +790,14 @@
 .badge-active { background: rgba(52, 211, 153, 0.9); color: #064e3b; }
 .badge-planned { background: rgba(144, 184, 248, 0.9); color: #1b3a5c; }
 .badge-inplanning { background: rgba(251, 191, 36, 0.9); color: #78350f; }
+
+/* Sits opposite the status badge so the two never overlap */
+.trip-badge-shared {
+  left: 12px;
+  right: auto;
+  background: rgba(125, 172, 245, 0.92);
+  color: #06172e;
+}
 
 .trip-card-body { padding: 1rem 1.25rem; }
 .trip-card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.35rem; }

@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { API_BASE } from '../config';
+import { takePendingRedirect } from '../pendingRedirect';
 import './Auth.css';
 
 function Login() {
@@ -34,7 +35,7 @@ function Login() {
         setError(err.error || 'Invalid email or password');
         return;
       }
-      navigate('/home');
+      navigate(takePendingRedirect() || '/home');
     } catch {
       setError('Could not reach the server. Please try again.');
     }

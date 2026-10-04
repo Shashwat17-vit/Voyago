@@ -69,9 +69,12 @@ function TripOverview() {
                     style={{ backgroundImage: `url(${trip.imageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80'})` }}
                     onClick={() => handleTripClick(trip)}
                   >
-                    <span className={`trip-badge ${trip.status === 'ACTIVE' ? 'badge-active' : 'badge-inplanning'}`}>
-                      {trip.status}
+                    <span className={`trip-badge ${trip.confirmed ? 'badge-active' : 'badge-inplanning'}`}>
+                      {trip.confirmed ? 'Confirmed' : 'Planning'}
                     </span>
+                    {!trip.isAdmin && (
+                      <span className="trip-badge trip-badge-shared">Shared with you</span>
+                    )}
                   </div>
                   <div className="trip-card-body" onClick={() => handleTripClick(trip)}>
                     <h3 className="trip-card-title">{trip.title}</h3>
@@ -83,7 +86,7 @@ function TripOverview() {
                       </span>
                       <div className="trip-card-actions" onClick={(e) => e.stopPropagation()}>
                         <button className="trip-view-btn" onClick={() => handleTripClick(trip)}>View</button>
-                        {confirmDeleteId === trip.tid ? (
+                        {trip.isAdmin && (confirmDeleteId === trip.tid ? (
                           <>
                             <button className="trip-delete-confirm-btn" onClick={() => handleDeleteTrip(trip.tid)}>Yes, delete</button>
                             <button className="trip-delete-cancel-btn" onClick={() => setConfirmDeleteId(null)}>Cancel</button>
@@ -92,7 +95,7 @@ function TripOverview() {
                           <button className="trip-delete-btn" onClick={() => setConfirmDeleteId(trip.tid)} title="Delete trip">
                             <Trash2 size={14} />
                           </button>
-                        )}
+                        ))}
                       </div>
                     </div>
                   </div>

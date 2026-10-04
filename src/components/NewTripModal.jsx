@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Row, Col } from 'react-bootstrap';
-import { X, ArrowRight, ArrowLeft, Star } from 'lucide-react';
+import { X, ArrowRight, ArrowLeft, Star, Check, AlertCircle } from 'lucide-react';
 import PlaceAutocomplete from './PlaceAutocomplete';
 import { API_BASE } from '../config';
+import './Collab.css';
 
 const interestOptions = [
   'Museums', 'Food & Dining', 'Adventure', 'Nightlife',
@@ -35,6 +36,7 @@ function NewTripModal({ isOpen, onClose, initialData }) {
   const [tripId, setTripId] = useState(null);
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError] = useState('');
+  const [inviteResults, setInviteResults] = useState([]);
 
   useEffect(() => {
     if (initialData) {
@@ -63,39 +65,15 @@ function NewTripModal({ isOpen, onClose, initialData }) {
     });
   };
 
-  const fetchDestinationImage = async (dest) => {
-    const key = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
-    if (!key) {
-      console.warn('VITE_UNSPLASH_ACCESS_KEY not set — restart Vite after adding .env');
-      return null;
-    }
-    try {
-      const res = await fetch(
-        `https://api.unsplash.com/photos/random?query=${encodeURIComponent(dest)}&orientation=landscape&content_filter=high&client_id=${key}`
-      );
-      if (!res.ok) {
-        console.error('Unsplash API error:', res.status, await res.text());
-        return null;
-      }
-      const data = await res.json();
-      return data?.urls?.regular || null;
-    } catch (err) {
-      console.error('Unsplash fetch failed:', err);
-      return null;
-    }
-  };
-
   const handleStep1Next = async (e) => {
     e.preventDefault();
     setStep1Error('');
     try {
-      const imageUrl = await fetchDestinationImage(destination);
-
       const res = await fetch(`${API_BASE}/api/trips`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ title, destination, startDate, endDate, numTravelers: numPeople, imageUrl }),
+        body: JSON.stringify({ title, destination, startDate, endDate, numTravelers: numPeople }),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -104,10 +82,34 @@ function NewTripModal({ isOpen, onClose, initialData }) {
       }
       const data = await res.json();
       setTripId(data.tid);
+      setInviteResults(await sendInvites(data.tid));
       setStep(2);
     } catch (e) {
       setStep1Error('Could not reach the server. Please check your connection.');
     }
+  };
+
+  // Invites can only be sent once the trip exists, so this runs right after creation.
+  const sendInvites = async (newTripId) => {
+    const emails = inviteEmails.split(',').map((v) => v.trim()).filter(Boolean);
+    const results = [];
+    for (const email of emails) {
+      try {
+        const res = await fetch(`${API_BASE}/api/trips/${newTripId}/invites`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email }),
+        });
+        const body = await res.json();
+        results.push(res.ok
+          ? { email, ok: true, existingUser: body.existingUser }
+          : { email, ok: false, error: body.error });
+      } catch {
+        results.push({ email, ok: false, error: 'Could not reach the server' });
+      }
+    }
+    return results;
   };
 
   const handleGenerate = async (e) => {
@@ -294,6 +296,9 @@ function NewTripModal({ isOpen, onClose, initialData }) {
                   value={inviteEmails}
                   onChange={(e) => setInviteEmails(e.target.value)}
                 />
+                <p className="newtrip-hint">
+                  They can accept the invite and edit the trip with you. You can add more people later.
+                </p>
               </Form.Group>
 
               <Button type="submit" variant="outline-light" className="newtrip-submit w-100">
@@ -309,6 +314,28 @@ function NewTripModal({ isOpen, onClose, initialData }) {
                 <div className="proposed-dates-bar">
                   <span className="proposed-dates-label">Trip dates:</span>
                   <span className="proposed-dates-value">{startDate} to {endDate}</span>
+                </div>
+              )}
+
+              {inviteResults.length > 0 && (
+                <div className="invite-list" style={{ marginBottom: '1rem' }}>
+                  {inviteResults.map((r) => (
+                    <div key={r.email} className="invite-row">
+                      {r.ok
+                        ? <Check size={16} color="#10b981" style={{ flexShrink: 0 }} />
+                        : <AlertCircle size={16} color="#ef4444" style={{ flexShrink: 0 }} />}
+                      <div className="invite-row-main">
+                        <span className="invite-row-email">{r.email}</span>
+                        <span className="invite-row-note">
+                          {r.ok
+                            ? (r.existingUser
+                                ? 'Invited — waiting in their Voyago inbox'
+                                : 'Invited — share the link from the trip page, they have no account yet')
+                            : r.error}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
 

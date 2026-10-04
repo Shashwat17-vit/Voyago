@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Calendar, Users, Trash2 } from 'lucide-react';
+import { Calendar, Users, Trash2, Lock, Pencil } from 'lucide-react';
+import './Collab.css';
 
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80';
 
@@ -60,21 +61,23 @@ function AdventureTripCard({ trip, onClick, onDelete }) {
             {days === 0 ? 'Today!' : `${days} days to go`}
           </div>
         )}
-        <div className="adventure-card-delete-wrap" onClick={(e) => e.stopPropagation()}>
-          {!confirming ? (
-            <button className="adventure-card-delete-btn" onClick={handleDeleteClick} title="Delete trip">
-              <Trash2 size={14} />
-            </button>
-          ) : (
-            <div className="adventure-card-confirm">
-              <span>Delete?</span>
-              <button className="adventure-card-confirm-yes" onClick={handleConfirm} disabled={deleting}>
-                {deleting ? '…' : 'Yes'}
+        {trip.isAdmin && (
+          <div className="adventure-card-delete-wrap" onClick={(e) => e.stopPropagation()}>
+            {!confirming ? (
+              <button className="adventure-card-delete-btn" onClick={handleDeleteClick} title="Delete trip">
+                <Trash2 size={14} />
               </button>
-              <button className="adventure-card-confirm-no" onClick={handleCancel}>No</button>
-            </div>
-          )}
-        </div>
+            ) : (
+              <div className="adventure-card-confirm">
+                <span>Delete?</span>
+                <button className="adventure-card-confirm-yes" onClick={handleConfirm} disabled={deleting}>
+                  {deleting ? '…' : 'Yes'}
+                </button>
+                <button className="adventure-card-confirm-no" onClick={handleCancel}>No</button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <div className="adventure-card-body">
         <h3 className="adventure-card-title">{trip.title}</h3>
@@ -90,7 +93,10 @@ function AdventureTripCard({ trip, onClick, onDelete }) {
         </div>
         <div className="adventure-card-footer">
           <span className="adventure-card-nights">{nights > 0 ? `${nights} nights` : '—'}</span>
-          <span className="adventure-card-tier">{trip.status || 'Planning'}</span>
+          <span className={`status-pill ${trip.confirmed ? 'status-pill-confirmed' : 'status-pill-planning'}`}>
+            {trip.confirmed ? <Lock size={10} /> : <Pencil size={10} />}
+            {trip.confirmed ? 'Confirmed' : 'Planning'}
+          </span>
         </div>
       </div>
     </div>
