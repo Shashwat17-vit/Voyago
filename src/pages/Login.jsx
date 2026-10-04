@@ -5,7 +5,7 @@ import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { API_BASE } from '../config';
 import { takePendingRedirect } from '../pendingRedirect';
-import { enterGuest } from '../guestSession';
+import { enterGuest, clearGuestFlag } from '../guestSession';
 import { flushGuestDraft } from '../flushGuestDraft';
 import './Auth.css';
 
@@ -15,7 +15,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { theme, toggleTheme, becomeGuest } = useTheme();
+  const { theme, toggleTheme, becomeGuest, refreshUser } = useTheme();
 
   const handleLogin = async (e) => {
     e?.preventDefault();
@@ -37,6 +37,8 @@ function Login() {
         setError(err.error || 'Invalid email or password');
         return;
       }
+      clearGuestFlag();
+      await refreshUser();
       try {
         const flushed = await flushGuestDraft();
         if (flushed?.tripId) {

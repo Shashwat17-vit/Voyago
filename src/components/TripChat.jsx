@@ -41,6 +41,7 @@ function TripChat({ tripId, tripTitle, members = [] }) {
   const clientRef = useRef(null);
   const bottomRef = useRef(null);
 
+  const waitingForUser = user == null;
   const isGuest = Boolean(user?.isGuest);
 
   useEffect(() => {
@@ -48,7 +49,7 @@ function TripChat({ tripId, tripTitle, members = [] }) {
   }, [messages, typingLabel]);
 
   useEffect(() => {
-    if (isGuest || !tripId) {
+    if (waitingForUser || isGuest || !tripId) {
       setStatus(isGuest ? 'guest' : 'loading');
       return undefined;
     }
@@ -144,7 +145,7 @@ function TripChat({ tripId, tripTitle, members = [] }) {
       clientRef.current = null;
       client?.disconnectUser().catch(() => {});
     };
-  }, [tripId, isGuest, user?.name]);
+  }, [tripId, waitingForUser, isGuest, user?.name]);
 
   const send = async (event) => {
     event.preventDefault();

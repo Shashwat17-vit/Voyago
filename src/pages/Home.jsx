@@ -7,6 +7,7 @@ import AdventuresSection from '../components/AdventuresSection';
 import NewTripModal from '../components/NewTripModal';
 import { API_BASE } from '../config';
 import { takePendingRedirect } from '../pendingRedirect';
+import { useTheme } from '../context/ThemeContext';
 import { clearDraft, getDraft, isGuest } from '../guestSession';
 import { flushGuestDraft } from '../flushGuestDraft';
 import './Home.css';
@@ -30,6 +31,7 @@ function draftAsTrip(draft) {
 
 function Home() {
   const navigate = useNavigate();
+  const { user } = useTheme();
   const [trips, setTrips] = useState([]);
   const [newTripOpen, setNewTripOpen] = useState(false);
   const [newTripData, setNewTripData] = useState(null);
@@ -115,7 +117,7 @@ function Home() {
       {flushError && (
         <p className="newtrip-field-error" style={{ textAlign: 'center', padding: '0 5%' }}>{flushError}</p>
       )}
-      {!isGuest() && <InvitesSection onAccepted={loadTrips} />}
+      {!isGuest() && !user?.isGuest && <InvitesSection onAccepted={loadTrips} />}
       <AdventuresSection trips={trips} onTripClick={handleTripClick} onDeleteTrip={handleDeleteTrip} />
 
       <NewTripModal

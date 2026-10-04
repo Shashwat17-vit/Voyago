@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { API_BASE } from '../config';
 import { GUEST_USER, clearGuestFlag, isGuest } from '../guestSession';
 
@@ -12,37 +12,54 @@ function toInitials(name) {
     : parts[0].slice(0, 2).toUpperCase();
 }
 
+function userFromMe(data) {
+  return {
+    uid: data.uid ?? null,
+    name: data.name || data.email || '',
+    initials: toInitials(data.name || data.email || ''),
+    email: data.email || '',
+    tag: data.tag || '',
+    handle: data.handle || (data.tag ? `#${data.tag}` : ''),
+    isGuest: false,
+    phone: '',
+    bio: '',
+    avatarUrl: '',
+  };
+}
+
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState('light');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [user, setUser] = useState(null); // null = not yet loaded
 
-  useEffect(() => {
-    fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' })
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data) {
-          clearGuestFlag();
-          setUser({
-            uid: data.uid ?? null,
-            name: data.name || data.email || '',
-            initials: toInitials(data.name || data.email || ''),
-            email: data.email || '',
-            tag: data.tag || '',
-            handle: data.handle || (data.tag ? `#${data.tag}` : ''),
-            isGuest: false,
-            phone: '',
-            bio: '',
-            avatarUrl: '',
-          });
-        } else if (isGuest()) {
-          setUser(GUEST_USER);
-        }
-      })
-      .catch(() => {
-        if (isGuest()) setUser(GUEST_USER);
-      });
+  const refreshUser = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' });
+      const data = res.ok ? await res.json() : null;
+      if (data) {
+        clearGuestFlag();
+        setUser(userFromMe(data));
+        return userFromMe(data);
+      }
+      if (isGuest()) {
+        setUser(GUEST_USER);
+        return GUEST_USER;
+      }
+      setUser(null);
+      return null;
+    } catch {
+      if (isGuest()) {
+        setUser(GUEST_USER);
+        return GUEST_USER;
+      }
+      setUser(null);
+      return null;
+    }
   }, []);
+
+  useEffect(() => {
+    refreshUser();
+  }, [refreshUser]);
 
   const becomeGuest = () => {
     setUser(GUEST_USER);
@@ -82,7 +99,7 @@ export function ThemeProvider({ children }) {
     <ThemeContext.Provider value={{
       theme, setTheme, toggleTheme,
       sidebarOpen, toggleSidebar,
-      user, updateUser, becomeGuest,
+      user, updateUser, becomeGuest, refreshUser,
       settings, updateSettings,
     }}>
       <div data-theme={theme}>
