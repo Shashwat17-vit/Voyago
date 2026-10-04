@@ -41,7 +41,6 @@ function Settings() {
   const [profileDraft, setProfileDraft] = useState({ ...user });
   const [saved, setSaved] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showProMessage, setShowProMessage] = useState(false);
 
   const showSaved = () => {
     setSaved(true);
@@ -302,18 +301,13 @@ function Settings() {
   const renderAccount = () => (
     <div className="settings-section-content">
       <div className="settings-card">
-        <h4 className="settings-card-title">Plan</h4>
-        <p className="settings-card-desc">Your current subscription details.</p>
+        <h4 className="settings-card-title">Paid plan</h4>
+        <p className="settings-card-desc">Chat and extra trips will be part of a paid plan later. Everything is free for now.</p>
         <div className="settings-plan-badge">
           <span className="settings-plan-name">Voyago Free</span>
-          <span className="settings-plan-tag">Current Plan</span>
+          <span className="settings-plan-tag">Current plan</span>
         </div>
-        <button className="settings-btn-accent" style={{ marginTop: '1rem' }} onClick={() => setShowProMessage(true)}>
-          Upgrade to Pro
-        </button>
-        {showProMessage && (
-          <p className="settings-coming-soon">Coming soon! Pro features are currently under development.</p>
-        )}
+        <p className="settings-coming-soon">Paid plan coming soon</p>
       </div>
 
       <div className="settings-card settings-card-danger">
