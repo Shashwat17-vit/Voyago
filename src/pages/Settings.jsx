@@ -10,6 +10,7 @@ import {
 import TopNavbar from '../components/TopNavbar';
 import { useTheme } from '../context/ThemeContext';
 import './Settings.css';
+import '../components/Collab.css';
 
 const SECTIONS = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -66,6 +67,7 @@ function Settings() {
           </div>
           <div className="settings-profile-info">
             <h3 className="settings-profile-name">{user.name}</h3>
+            {user.handle && <p className="settings-profile-email user-handle">{user.handle}</p>}
             <p className="settings-profile-email">{user.email}</p>
           </div>
           {!editingProfile && (
@@ -148,6 +150,11 @@ function Settings() {
           </div>
         ) : (
           <div className="settings-profile-details">
+            <div className="settings-detail-row">
+              <User size={16} className="settings-detail-icon" />
+              <span className="settings-detail-label">Handle</span>
+              <span className="settings-detail-value user-handle">{user.handle || 'Assigned on next sign-in'}</span>
+            </div>
             <div className="settings-detail-row">
               <Mail size={16} className="settings-detail-icon" />
               <span className="settings-detail-label">Email</span>

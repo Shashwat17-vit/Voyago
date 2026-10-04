@@ -14,7 +14,11 @@ import './ItineraryCalendar.css';
 
 const HOUR_START = 6;
 const HOUR_END = 22;
-const HOUR_HEIGHT = 64;
+const HOUR_HEIGHT = 88;
+const MIN_EVENT_HEIGHT = 48;
+// Title, time and location stacked need roughly this much room; shorter events
+// drop to a single row so the title is never clipped.
+const STACKED_EVENT_HEIGHT = 74;
 
 const CATEGORY_COLORS = {
   SIGHTSEEING: '#3b82f6',
@@ -639,30 +643,35 @@ function DayView({ activities, onEventClick }) {
           {hours.map((h) => (
             <div key={h} className="cal-hour-line" style={{ top: (h - HOUR_START) * HOUR_HEIGHT }} />
           ))}
-          {activities.map((act, i) => (
-            <div
-              key={i}
-              className="cal-event-block"
-              onClick={() => onEventClick(act)}
-              style={{
-                top: timeToOffset(act.time),
-                height: Math.max(durationToHeight(act.duration), 40),
-                borderLeftColor: act.color,
-              }}
-            >
-              <div className="cal-event-title">{act.title}</div>
-              <div className="cal-event-meta">
-                <Clock size={12} />
-                {formatTimeRange(act.time, act.duration)}
-              </div>
-              {act.location && (
+          {activities.map((act, i) => {
+            const height = Math.max(durationToHeight(act.duration), MIN_EVENT_HEIGHT);
+            const compact = height < STACKED_EVENT_HEIGHT;
+            return (
+              <div
+                key={i}
+                className={`cal-event-block ${compact ? 'cal-event-block-compact' : ''}`}
+                onClick={() => onEventClick(act)}
+                style={{
+                  top: timeToOffset(act.time),
+                  height,
+                  borderLeftColor: act.color,
+                }}
+                title={act.title}
+              >
+                <div className="cal-event-title">{act.title}</div>
                 <div className="cal-event-meta">
-                  <MapPin size={12} />
-                  {act.location}
+                  <Clock size={12} />
+                  {formatTimeRange(act.time, act.duration)}
                 </div>
-              )}
-            </div>
-          ))}
+                {!compact && act.location && (
+                  <div className="cal-event-meta">
+                    <MapPin size={12} />
+                    {act.location}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -724,10 +733,11 @@ function WeekView({ dates, itinerary, onEventClick }) {
                     onClick={() => onEventClick(act)}
                     style={{
                       top: timeToOffset(act.time),
-                      height: Math.max(durationToHeight(act.duration), 28),
+                      height: Math.max(durationToHeight(act.duration), MIN_EVENT_HEIGHT),
                       borderLeftColor: act.color,
                       backgroundColor: act.color + '1a',
                     }}
+                    title={act.title}
                   >
                     <span className="cal-week-event-title" style={{ color: act.color }}>
                       {act.title}

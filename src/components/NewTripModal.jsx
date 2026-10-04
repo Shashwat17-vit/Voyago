@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { X, ArrowRight, ArrowLeft, Star, Check, AlertCircle } from 'lucide-react';
 import PlaceAutocomplete from './PlaceAutocomplete';
+import UserPicker from './UserPicker';
 import { API_BASE } from '../config';
 import './Collab.css';
 
@@ -23,7 +24,8 @@ function NewTripModal({ isOpen, onClose, initialData }) {
   const [numPeople, setNumPeople] = useState('');
   const [groupOption, setGroupOption] = useState('individual');
   const [groupName, setGroupName] = useState('');
-  const [inviteEmails, setInviteEmails] = useState('');
+  const [invitePeople, setInvitePeople] = useState([]);
+  const [inviteEmailExtra, setInviteEmailExtra] = useState('');
   const [step1Error, setStep1Error] = useState('');
 
   const [currentLocation, setCurrentLocation] = useState('');
@@ -91,22 +93,31 @@ function NewTripModal({ isOpen, onClose, initialData }) {
 
   // Invites can only be sent once the trip exists, so this runs right after creation.
   const sendInvites = async (newTripId) => {
-    const emails = inviteEmails.split(',').map((v) => v.trim()).filter(Boolean);
+    const payloads = [
+      ...invitePeople.map((person) => ({
+        label: `${person.name} ${person.handle || ''}`.trim(),
+        body: { tag: person.tag },
+      })),
+      ...inviteEmailExtra.split(',').map((v) => v.trim()).filter(Boolean).map((email) => ({
+        label: email,
+        body: { email },
+      })),
+    ];
     const results = [];
-    for (const email of emails) {
+    for (const item of payloads) {
       try {
         const res = await fetch(`${API_BASE}/api/trips/${newTripId}/invites`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ email }),
+          body: JSON.stringify(item.body),
         });
         const body = await res.json();
         results.push(res.ok
-          ? { email, ok: true, existingUser: body.existingUser }
-          : { email, ok: false, error: body.error });
+          ? { email: item.label, ok: true, existingUser: body.existingUser }
+          : { email: item.label, ok: false, error: body.error });
       } catch {
-        results.push({ email, ok: false, error: 'Could not reach the server' });
+        results.push({ email: item.label, ok: false, error: 'Could not reach the server' });
       }
     }
     return results;
@@ -287,17 +298,22 @@ function NewTripModal({ isOpen, onClose, initialData }) {
               )}
 
               <Form.Group className="mb-3">
-                <Form.Label className="newtrip-label">Invite Members (emails, comma-separated)</Form.Label>
+                <Form.Label className="newtrip-label">Invite Members</Form.Label>
+                <UserPicker selected={invitePeople} onChange={setInvitePeople} />
+                <p className="newtrip-hint">Search by name or #tag. Two people with the same name are told apart by their tag.</p>
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label className="newtrip-label">Or invite by email</Form.Label>
                 <Form.Control
-                  as="textarea"
-                  rows={2}
-                  placeholder="friend1@email.com, friend2@email.com"
-                  className="newtrip-input newtrip-textarea"
-                  value={inviteEmails}
-                  onChange={(e) => setInviteEmails(e.target.value)}
+                  type="email"
+                  placeholder="friend@email.com"
+                  className="newtrip-input"
+                  value={inviteEmailExtra}
+                  onChange={(e) => setInviteEmailExtra(e.target.value)}
                 />
                 <p className="newtrip-hint">
-                  They can accept the invite and edit the trip with you. You can add more people later.
+                  They will get a link to join after signing up.
                 </p>
               </Form.Group>
 

@@ -1,35 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, MapPin } from 'lucide-react';
-import { API_BASE } from '../config';
+import { useInvites } from '../context/InvitesContext';
 import './Collab.css';
 
 function InviteInbox() {
   const navigate = useNavigate();
-  const [invites, setInvites] = useState([]);
+  const { invites, respond } = useInvites();
   const [open, setOpen] = useState(false);
   const [busyToken, setBusyToken] = useState('');
 
-  useEffect(() => {
-    fetch(`${API_BASE}/api/invites/pending`, { credentials: 'include' })
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => setInvites(Array.isArray(data) ? data : []))
-      .catch(() => {});
-  }, []);
-
-  const respond = async (invite, action) => {
+  const handle = async (invite, action) => {
     setBusyToken(invite.token);
     try {
-      const res = await fetch(`${API_BASE}/api/invites/${invite.token}/${action}`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-      if (!res.ok) return;
-      setInvites((prev) => prev.filter((i) => i.token !== invite.token));
+      await respond(invite.token, action);
       if (action === 'accept') {
         setOpen(false);
         navigate('/trips/details', { state: { tripId: invite.tripId } });
       }
+    } catch {
+      // Keep the inbox open so the user can retry.
     } finally {
       setBusyToken('');
     }
@@ -67,14 +57,14 @@ function InviteInbox() {
                     <button
                       className="invite-accept-btn"
                       disabled={busyToken === invite.token}
-                      onClick={() => respond(invite, 'accept')}
+                      onClick={() => handle(invite, 'accept')}
                     >
                       Accept
                     </button>
                     <button
                       className="invite-decline-btn"
                       disabled={busyToken === invite.token}
-                      onClick={() => respond(invite, 'decline')}
+                      onClick={() => handle(invite, 'decline')}
                     >
                       Deny
                     </button>

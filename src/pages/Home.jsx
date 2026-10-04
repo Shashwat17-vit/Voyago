@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopNavbar from '../components/TopNavbar';
 import HeroSection from '../components/HeroSection';
+import InvitesSection from '../components/InvitesSection';
 import AdventuresSection from '../components/AdventuresSection';
 import NewTripModal from '../components/NewTripModal';
 import { API_BASE } from '../config';
@@ -21,12 +22,16 @@ function Home() {
     if (pending) navigate(pending, { replace: true });
   }, [navigate]);
 
-  useEffect(() => {
+  const loadTrips = useCallback(() => {
     fetch(`${API_BASE}/api/trips`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => setTrips(Array.isArray(data) ? data : []))
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    loadTrips();
+  }, [loadTrips]);
 
   const handleTripClick = (trip) => {
     navigate('/trips/details', { state: { tripId: trip.tid } });
@@ -49,6 +54,7 @@ function Home() {
     <div className="home-v2">
       <TopNavbar />
       <HeroSection onStartPlan={handleStartPlan} />
+      <InvitesSection onAccepted={loadTrips} />
       <AdventuresSection trips={trips} onTripClick={handleTripClick} onDeleteTrip={handleDeleteTrip} />
 
       <NewTripModal

@@ -25,6 +25,8 @@ export function ThemeProvider({ children }) {
             name: data.name || data.email || '',
             initials: toInitials(data.name || data.email || ''),
             email: data.email || '',
+            tag: data.tag || '',
+            handle: data.handle || (data.tag ? `#${data.tag}` : ''),
             phone: '',
             bio: '',
             avatarUrl: '',

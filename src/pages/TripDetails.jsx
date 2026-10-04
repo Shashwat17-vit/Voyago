@@ -173,6 +173,7 @@ function TripDetails() {
                             <div className="td-info-member-details">
                               <span className="td-info-member-name">
                                 {m.name}
+                                {m.handle && <span className="user-handle">{m.handle}</span>}
                                 {m.isAdmin && <span className="td-info-admin-badge"><Crown size={10} /> Admin</span>}
                               </span>
                               <span className="td-info-member-email"><Mail size={11} /> {m.email || ''}</span>

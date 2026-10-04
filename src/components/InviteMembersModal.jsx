@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form } from 'react-bootstrap';
 import { X, UserPlus, Crown, Mail, Check, Copy, Clock } from 'lucide-react';
+import UserPicker from './UserPicker';
 import { API_BASE } from '../config';
 import './Collab.css';
 
@@ -9,6 +10,7 @@ const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 function InviteMembersModal({ isOpen, tripId, isAdmin, onClose }) {
   const [members, setMembers] = useState([]);
   const [invites, setInvites] = useState([]);
+  const [people, setPeople] = useState([]);
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -33,43 +35,50 @@ function InviteMembersModal({ isOpen, tripId, isAdmin, onClose }) {
 
   if (!isOpen) return null;
 
+  const postInvite = async (payload) => {
+    const res = await fetch(`${API_BASE}/api/trips/${tripId}/invites`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not send that invite.');
+    setInvites((prev) => [...prev.filter((i) => i.email !== data.email), data]);
+    return data;
+  };
+
   const handleInvite = async (e) => {
     e.preventDefault();
     setError('');
     setNotice('');
 
-    const value = email.trim();
-    if (!value) {
-      setError('Enter an email address to invite.');
+    const emailValue = email.trim();
+    if (!people.length && !emailValue) {
+      setError('Search for a person or enter an email address.');
       return;
     }
-    if (!EMAIL_RE.test(value)) {
-      setError(`"${value}" is not a valid email address.`);
+    if (emailValue && !EMAIL_RE.test(emailValue)) {
+      setError(`"${emailValue}" is not a valid email address.`);
       return;
     }
 
     setSending(true);
     try {
-      const res = await fetch(`${API_BASE}/api/trips/${tripId}/invites`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: value }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Could not send that invite.');
-        return;
+      const sent = [];
+      for (const person of people) {
+        const data = await postInvite({ tag: person.tag });
+        sent.push(data.handle || person.handle || person.name);
       }
-      setInvites((prev) => [...prev.filter((i) => i.email !== data.email), data]);
+      if (emailValue) {
+        const data = await postInvite({ email: emailValue });
+        sent.push(data.handle || emailValue);
+      }
+      setPeople([]);
       setEmail('');
-      setNotice(
-        data.existingUser
-          ? `${data.email} has a Voyago account — the invite is waiting in their inbox.`
-          : `${data.email} has no Voyago account yet. Share the invite link so they can sign up and join.`
-      );
-    } catch {
-      setError('Could not reach the server. Please try again.');
+      setNotice(`Invite sent to ${sent.join(', ')}.`);
+    } catch (err) {
+      setError(err.message || 'Could not reach the server. Please try again.');
     } finally {
       setSending(false);
     }
@@ -93,7 +102,7 @@ function InviteMembersModal({ isOpen, tripId, isAdmin, onClose }) {
             <h2 className="newtrip-modal-title">Trip Members</h2>
             <p className="newtrip-modal-subtitle">
               {isAdmin
-                ? 'Invite people by email — they can accept and edit the trip with you'
+                ? 'Search Voyago users by name or #tag — or send an email link'
                 : 'Everyone planning this trip'}
             </p>
           </div>
@@ -105,7 +114,10 @@ function InviteMembersModal({ isOpen, tripId, isAdmin, onClose }) {
         <div className="newtrip-modal-body">
           {isAdmin && (
             <Form onSubmit={handleInvite}>
-              <Form.Label className="newtrip-label">Invite by email</Form.Label>
+              <Form.Label className="newtrip-label">Invite Members</Form.Label>
+              <UserPicker selected={people} onChange={setPeople} />
+
+              <Form.Label className="newtrip-label" style={{ marginTop: 14 }}>Or invite by email</Form.Label>
               <div className="invite-add-row">
                 <Form.Control
                   type="email"
@@ -135,6 +147,7 @@ function InviteMembersModal({ isOpen, tripId, isAdmin, onClose }) {
                   <div className="invite-row-main">
                     <span className="invite-row-email">
                       {m.name}
+                      {m.handle && <span className="user-handle">{m.handle}</span>}
                       {m.isAdmin && <span className="td-info-admin-badge"><Crown size={10} /> Admin</span>}
                     </span>
                     <span className="invite-row-note"><Mail size={11} /> {m.email}</span>
@@ -156,7 +169,10 @@ function InviteMembersModal({ isOpen, tripId, isAdmin, onClose }) {
                     <div key={invite.inviteId} className="invite-row">
                       <Clock size={16} color="#fbbf24" style={{ flexShrink: 0 }} />
                       <div className="invite-row-main">
-                        <span className="invite-row-email">{invite.email}</span>
+                        <span className="invite-row-email">
+                          {invite.name || invite.email}
+                          {invite.handle && <span className="user-handle">{invite.handle}</span>}
+                        </span>
                         <span className="invite-row-note">
                           {invite.existingUser
                             ? 'Has a Voyago account — invite is in their inbox'

@@ -52,6 +52,7 @@ function TopNavbar() {
               <div className="navbar-dropdown">
                 <div className="navbar-dropdown-header">
                   <span className="navbar-dropdown-name">{user?.name || ''}</span>
+                  {user?.handle && <span className="navbar-dropdown-email user-handle">{user.handle}</span>}
                   <span className="navbar-dropdown-email">{user?.email || ''}</span>
                 </div>
                 <button className="navbar-dropdown-item" onClick={() => { toggleTheme(); setDropdownOpen(false); }}>

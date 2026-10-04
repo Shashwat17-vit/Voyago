@@ -418,3 +418,201 @@
   margin: 1rem 0 0;
   line-height: 1.5;
 }
+
+.user-handle {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--accent);
+}
+
+.invite-banner-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.invite-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-left: 4px solid var(--accent);
+}
+
+.invite-banner-thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--surface-bg);
+  flex-shrink: 0;
+}
+
+.invite-banner-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.invite-banner-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.invite-banner-meta,
+.invite-banner-from {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.invite-banner-dot {
+  opacity: 0.5;
+}
+
+.invite-banner-from {
+  margin-top: 4px;
+}
+
+.invite-banner-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.invite-banner-actions .invite-accept-btn,
+.invite-banner-actions .invite-decline-btn {
+  min-width: 88px;
+  padding: 8px 14px;
+}
+
+.user-picker {
+  position: relative;
+}
+
+.user-picker-input {
+  width: 100%;
+}
+
+.user-picker-dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  background: var(--modal-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+  padding: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.user-picker-empty {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+  padding: 10px 8px;
+}
+
+.user-result {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+}
+
+.user-result:hover {
+  background: var(--surface-bg);
+}
+
+.user-result-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #06172e;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-result-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px 5px 10px;
+  border-radius: 999px;
+  background: var(--surface-bg);
+  border: 1px solid var(--card-border);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-chip button {
+  display: flex;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+}
+
+.user-chip button:hover {
+  color: var(--danger);
+}
+
+@media (max-width: 720px) {
+  .invite-banner {
+    flex-wrap: wrap;
+  }
+
+  .invite-banner-actions {
+    width: 100%;
+  }
+
+  .invite-banner-actions .invite-accept-btn,
+  .invite-banner-actions .invite-decline-btn {
+    flex: 1;
+  }
+}
