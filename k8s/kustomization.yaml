@@ -4,4 +4,4 @@ resources:
   - frontend.yaml
 images:
   - name: 729231827726.dkr.ecr.us-east-2.amazonaws.com/dev/voyago
-    newTag: frontend-6c45e96a44b337bcdd1ddba1bd9a1698525b05d5
+    newTag: frontend-78d5a471288d36e4cbfc773875e8638a02d94c78
