@@ -1,11 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Voyago">
-  <defs>
-    <linearGradient id="box" x1="16" y1="2" x2="16" y2="30">
-      <stop offset="0" stop-color="#3f4b63"/>
-      <stop offset="1" stop-color="#1e293b"/>
-    </linearGradient>
-  </defs>
-  <rect width="32" height="32" rx="8" fill="url(#box)"/>
-  <rect x="1.25" y="1.25" width="29.5" height="29.5" rx="6.75" fill="none" stroke="#93c5fd" stroke-width="1.5"/>
-  <path fill="#fff" d="M8.2 7.6h4.35L16 18.4 19.45 7.6H23.8L17.7 24.4h-3.4L8.2 7.6z"/>
+  <rect x="1.6" y="1.6" width="28.8" height="28.8" rx="6.5" fill="#ffffff" stroke="#3b82f6" stroke-width="2.4"/>
+  <path fill="#0f172a" d="M7.4 8.2h4.15L16 18.6l4.45-10.4h4.15L17.55 24.2h-3.1L7.4 8.2z"/>
 </svg>
